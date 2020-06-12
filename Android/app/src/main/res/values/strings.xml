@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Módulo Fotovoltaico</string>
+    <string name="btnConectar"> Conectar </string>
+    <string name="programaIngE">Programa de Ingeniería Electrónica</string>
+    <string name="selectModulo">Selecciona un modulo para visualizar</string>
+    <string name="moduloPanel">Panel solar</string>
+    <string name="moduloControlador">Controlador de carga</string>
+    <string name="moduloInversor">Inversor</string>
+</resources>

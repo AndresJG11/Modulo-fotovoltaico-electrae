@@ -2,6 +2,7 @@ package com.example.modulofotovoltaico;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 public class InterfazModulo extends AppCompatActivity{
 
     private String nombreModulo;
+    private String MACModulo;
 
     private GridView gridData;
     private GridAdapter gridAdapter;
@@ -55,20 +58,22 @@ public class InterfazModulo extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         try {
             this.getSupportActionBar().hide();
-        } catch (NullPointerException e) {
-        }
+        } catch (NullPointerException e) {}
+
         modulo = (Modulo)getIntent().getExtras().getSerializable("Modulo");
         setContentView(R.layout.modulo_panel);
         Toast.makeText(getApplicationContext(),"Conectando...",Toast.LENGTH_SHORT).show();
         init();
 
-        BT = new Bluetooth(nombreModulo);
+        BT = new Bluetooth(MACModulo, this);
         /*
         if(!BT.isConnected){
             Toast.makeText(getApplicationContext(), "Imposible conectar, revisa la conexion e ingresa de nuevo", Toast.LENGTH_LONG).show();
@@ -90,6 +95,11 @@ public class InterfazModulo extends AppCompatActivity{
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case Bluetooth.UNSUCCESS_CONNECT:
+                    Toast.makeText(getApplicationContext(), "La conexión ha fallado", Toast.LENGTH_LONG).show();
+                    finish();
+                    break;
+
                 case Bluetooth.SUCCESS_CONNECT:
                     Bluetooth.connectedThread = new Bluetooth.ConnectedThread((BluetoothSocket) msg.obj);
                     Toast.makeText(getApplicationContext(), "Conectado", Toast.LENGTH_LONG).show();
@@ -105,11 +115,16 @@ public class InterfazModulo extends AppCompatActivity{
                     // Se actualiza el valor de x y se grafican los datos recibidos
                     xActual = xAnt + delayTime;
                     xAnt = xActual;
-                    // Grafica los datos en orden de llegada
+                    // Grafica los datos
                     int j = 0;
                     for(LineGraphSeries serie:serieDatos){
-                        double yValue = Double.parseDouble(strData[j]);
-                        serie.appendData(new DataPoint(xActual,yValue),true,100);
+                        try {
+                            double yValue = Double.parseDouble(strData[j]);
+                            serie.appendData(new DataPoint(xActual, yValue), true, 90000);
+                        } catch(NumberFormatException e){
+                            serie.appendData(new DataPoint(xActual, 0.0), true, 90000);
+                            Log.d("Error", "NumberFormatException");
+                        }
                         j++;
                     }
 
@@ -135,11 +150,11 @@ public class InterfazModulo extends AppCompatActivity{
         //dataSensores = prepareDataSet();
         dataSensores = modulo.getSensores();
         nombreModulo = modulo.getNombre();
+        MACModulo = modulo.getMAC();
+
         gridData = (GridView) findViewById(R.id.gridData);
 
         gridAdapter = new GridAdapter(this, dataSensores);
-
-        gridData.setAdapter(gridAdapter);
 
         graphView = (GraphView) findViewById(R.id.graph);
 
@@ -153,17 +168,12 @@ public class InterfazModulo extends AppCompatActivity{
             //graphView.addSeries(serie);
         }
 
-        // activate horizontal zooming and scrolling
-        graphView.getViewport().setScalable(true);
+        graphView.getViewport().setScrollable(true); // enables horizontal scrolling
+        //graphView.getViewport().setScrollableY(true); // enables vertical scrolling
+        graphView.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+        //graphView.getViewport().setScalableY(true); // enables vertical zooming and scrolling
 
-        // activate horizontal scrolling
-        graphView.getViewport().setScrollable(true);
-
-        // activate horizontal and vertical zooming and scrolling
-        graphView.getViewport().setScalableY(true);
-
-        // activate vertical scrolling
-        graphView.getViewport().setScrollableY(true);
+        gridData.setAdapter(gridAdapter);
 
         gridData.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -176,10 +186,12 @@ public class InterfazModulo extends AppCompatActivity{
                 // Busca entre las series graficadas para eliminar o agregar al plot
                 if(serieDatosGraph.contains(serieSelected)){
                     gridAdapter.setEnfasis(position,false);
+                    gridData.setAdapter(gridAdapter);
                     serieDatosGraph.remove(serieSelected);
                     graphView.removeSeries(serieSelected);
                 } else {
                     gridAdapter.setEnfasis(position,true);
+                    gridData.setAdapter(gridAdapter);
                     graphView.addSeries(serieSelected);
                     serieDatosGraph.add(serieSelected);
                 }

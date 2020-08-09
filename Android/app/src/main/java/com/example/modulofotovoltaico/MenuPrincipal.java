@@ -21,31 +21,40 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
 
     private Modulo moduloPanel;
     String nombrePanel = "HC-06";
+    String MACPanel= "20:18:08:14:85:01";
 
     private Modulo moduloControlador;
     String nombreControlador = "HC-06";
+    String MACControlador = "20:18:08:14:80:47";
 
     private Modulo moduloInversor;
     String nombreInversor = "HC-06";
+    String MACInversor = "Desconocida";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.menu_principal);
+
+        try
+        {
+            this.getSupportActionBar().hide();
+        }
+        catch (NullPointerException e){}
 
         initButton();
 
         ArrayList<Sensor> sensoresPanel = getSensoresPanel();
-        moduloPanel = new Modulo(nombrePanel,sensoresPanel);
+        moduloPanel = new Modulo(nombrePanel,sensoresPanel, MACPanel);
 
         ArrayList<Sensor> sensoresControlador = getSensoresControlador();
-        moduloControlador = new Modulo(nombreControlador,sensoresControlador);
+        moduloControlador = new Modulo(nombreControlador,sensoresControlador, MACControlador);
 
         ArrayList<Sensor> sensoresInversor= getSensoresInversor();
-        moduloInversor = new Modulo(nombreInversor,sensoresInversor);
+        moduloInversor = new Modulo(nombreInversor,sensoresInversor, MACInversor);
     }
 
 
@@ -60,7 +69,6 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
         sensor.setMedida("NaN");
         sensor.setColor("#708AE4"); // Color del BackGround en Hexa
         sensores.add(sensor);
-
 
         // Humedad
         sensor = new Sensor("Humedad");
@@ -105,6 +113,18 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
         // Se declaran los sensores ubicados en el modulo del controlador de carga
         ArrayList<Sensor> sensores = new ArrayList<>();
         Sensor sensor;
+
+        // Temperatura
+        sensor = new Sensor("Temperatura");
+        sensor.setMedida("NaN");
+        sensor.setColor("#708AE4"); // Color del BackGround en Hexa
+        sensores.add(sensor);
+
+        // Humedad
+        sensor = new Sensor("Humedad");
+        sensor.setMedida("NaN");
+        sensor.setColor("#9770E4");
+        sensores.add(sensor);
 
         // Voltaje
         sensor = new Sensor("Voltaje");
@@ -176,20 +196,20 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
         switch (v.getId()) {
             case R.id.btnPanel:
                 Intent intent = new Intent (v.getContext(), InterfazModulo.class);
-                intent.putExtra("Modulo",moduloPanel);
+                intent.putExtra("Modulo", moduloPanel);
                 startActivity(intent);
                 break;
             case R.id.btnControlador:
                 Intent intentControlador = new Intent (v.getContext(), InterfazModulo.class);
-                intentControlador.putExtra("Modulo",moduloControlador);
+                intentControlador.putExtra("Modulo", moduloControlador);
                 startActivity(intentControlador);
                 //Toast.makeText(getApplicationContext(),"Controlador", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnInversor:
-                Intent intentInversor = new Intent (v.getContext(), InterfazModulo.class);
-                intentInversor.putExtra("Modulo",moduloInversor);
-                startActivity(intentInversor);
-                //Toast.makeText(getApplicationContext(),"Inversor", Toast.LENGTH_SHORT).show();
+                //Intent intentInversor = new Intent (v.getContext(), InterfazModulo.class);
+                //intentInversor.putExtra("Modulo", moduloInversor);
+                //startActivity(intentInversor);
+                Toast.makeText(getApplicationContext(),"Inversor", Toast.LENGTH_SHORT).show();
                 break;
 
         }

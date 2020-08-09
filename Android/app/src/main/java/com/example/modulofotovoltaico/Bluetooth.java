@@ -1,5 +1,6 @@
 package com.example.modulofotovoltaico;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -20,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-public class Bluetooth {
+
+public class Bluetooth extends Activity{
 
     static Handler mHandler = new Handler();
 
@@ -28,8 +30,15 @@ public class Bluetooth {
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     protected static final int SUCCESS_CONNECT = 0;
     protected static final int MESSAGE_READ = 1;
+    protected static final int REQUEST_ENABLE_BT = 2;
+    protected static final int UNSUCCESS_CONNECT = 3;
+
+    Activity activity;
+
+
     private String moduloName;
-    public boolean isConnected = false;
+    private String MACModulo;
+    public static boolean isConnected = false;
     ArrayAdapter<String> listAdapter;
     ListView listView;
     static BluetoothAdapter btAdapter;
@@ -39,13 +48,36 @@ public class Bluetooth {
     IntentFilter filter;
     BroadcastReceiver receiver;
 
-    public Bluetooth(String moduloName) {
-        // Verifica que BT se encuentre encendido
-        this.moduloName = moduloName;
-        init();
+    public Bluetooth(String MACModulo, Activity activity) {
+        this.activity=activity;
+
+        this.moduloName = MACModulo;
+        this.MACModulo = MACModulo;
+
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
         if (!btAdapter.isEnabled()) {
-            turnOnBT();
+            // Create an intent for SearchActivity
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            //start SearchActivity through intent and expect for result.
+            //The result is based on result code, which is REQUEST_DISCOVERY
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }else{
+            getPairedDevices();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != REQUEST_ENABLE_BT) {
+            Log.d("Debug", ">>intent REQUEST_DISCOVERY failed!");
+            return;
+        }
+        if (resultCode != Activity.RESULT_OK) {
+            Log.d("Debug", ">>intent RESULT_OK failed!");
+            return;
+        }
+        Log.d("Debug", ">>onActivityResult!");
         getPairedDevices();
     }
 
@@ -67,12 +99,20 @@ public class Bluetooth {
         btAdapter.startDiscovery();
     }
 
-    private void turnOnBT() {
+    /*private void turnOnBT() {
         // Enciende Bluetooth si esta apagado
-        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-    }
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    }*/
 
     private void getPairedDevices() {
+        // Obtiene el objeto BluetoothDevice utilizando la dirección MAC
+        BluetoothDevice device = btAdapter.getRemoteDevice(MACModulo);
+
+        // Se conecta al dispositivo con dicha MAC
+        ConnectThread connect = new ConnectThread(device);
+        connect.start();
+        /*
         // Busca entre los dispositivos emparejados el nombre del modulo y se conecta
         devicesArray = btAdapter.getBondedDevices(); // Obtiene Array de dispositivos emparejados
         if (devicesArray.size() > 0) {
@@ -83,16 +123,24 @@ public class Bluetooth {
                     ConnectThread connect = new ConnectThread(device);
                     connect.start();
                     Log.d("Conexion realiada con", device.getName());
+
+
+                    // Obtiene el objeto BluetoothDevice utilizando la dirección MAC
+                    val device: BluetoothDevice = m_bluetoothAdapter.getRemoteDevice(m_address)
+
                 }
             }
         }
+        */
     }
 
     private void init() {
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
         pairedDevices = new ArrayList<String>();
         filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         devices = new ArrayList<BluetoothDevice>();
+
+        /*
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -121,7 +169,7 @@ public class Bluetooth {
                 }
             }
 
-        };
+        };*/
     }
 
     private class ConnectThread extends Thread {
@@ -156,10 +204,18 @@ public class Bluetooth {
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and get out
                 try {
+                    /*
+                    activity.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(activity, "La conexión ha fallado", Toast.LENGTH_LONG).show();
+                        }
+                    });*/
+
                     isConnected = false;
                     mmSocket.close();
-                } catch (IOException closeException) {
-                }
+                } catch (IOException closeException) {}
+
+                mHandler.obtainMessage(UNSUCCESS_CONNECT, mmSocket).sendToTarget();
                 return;
             }
 

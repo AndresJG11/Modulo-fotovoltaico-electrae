@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -47,10 +48,13 @@ public class GridAdapter extends BaseAdapter {
 
         if(convertView == null){
             holder = new ViewHolder();
-            convertView = mInflaterCatalogListItems.inflate(adapter_sensor,null);
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.adapter_sensor, viewGroup, false);
+            //convertView = mInflaterCatalogListItems.inflate(adapter_sensor,null);
             holder.setLblSensor((TextView) convertView.findViewById(R.id.Sensor));
             holder.setLblMedida((TextView) convertView.findViewById(R.id.Medida));
             holder.setLinearLayout((LinearLayout) convertView.findViewById(R.id.lyCelda));
+            holder.setCheckBox((CheckBox) convertView.findViewById(R.id.checkBox));
 
             convertView.setTag(holder);
          } else {
@@ -59,9 +63,10 @@ public class GridAdapter extends BaseAdapter {
 
         if(dataSensores.get(position) != null){
             holder.getLblSensor().setText(dataSensores.get(position).getSensorName());
-            holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
+            //holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
             holder.getLblMedida().setText(dataSensores.get(position).getMedida());
             holder.getLinearLayout().setBackgroundColor(dataSensores.get(position).getColor());
+            holder.getCheckBox().setChecked(dataSensores.get(position).getEnfasis());
         }
         return convertView;
     }
@@ -69,20 +74,24 @@ public class GridAdapter extends BaseAdapter {
     private static class ViewHolder {
         private TextView lblSensor;
         private TextView lblMedida;
+        private CheckBox checkBox;
         private LinearLayout linearLayout;
 
         public TextView getLblSensor() {
             return lblSensor;
         }
-
         public void setLblSensor(TextView lblSensor) {
             this.lblSensor = lblSensor;
         }
 
+        public CheckBox getCheckBox() {return checkBox;}
+        public void  setCheckBox(CheckBox checkBox) {this.checkBox = checkBox;}
+
+
+
         public TextView getLblMedida() {
             return lblMedida;
         }
-
         public void setLblMedida(TextView lblMedida) {
             this.lblMedida = lblMedida;
         }
@@ -90,19 +99,22 @@ public class GridAdapter extends BaseAdapter {
         public LinearLayout getLinearLayout() {
             return linearLayout;
         }
-
         public void setLinearLayout(LinearLayout linearLayout) {
             this.linearLayout = linearLayout;
         }
+
     }
 
     public void setMedida(int position,String medida){
         dataSensores.get(position).setMedida(medida);
         holder.getLblMedida().setText(medida);
+        //holder.getCheckBox().setText(medida);
+        holder.getCheckBox().setChecked(dataSensores.get(position).getEnfasis());
     }
 
-    public void setEnfasis(int position,boolean estado){
+    public void setEnfasis(int position, boolean estado){
         dataSensores.get(position).setEnfasis(estado);
+        holder.getCheckBox().setChecked(estado);
         //holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
     }
 

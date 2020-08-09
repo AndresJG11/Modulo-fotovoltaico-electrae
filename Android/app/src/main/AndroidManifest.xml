@@ -24,8 +24,7 @@
         </activity>
 
         <activity
-            android:name=".MenuPrincipal"
-            android:label="MenuPrincipal">
+            android:name=".MenuPrincipal">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"></action>
                 <category android:name="android.intent.category.LAUNCHER"></category>

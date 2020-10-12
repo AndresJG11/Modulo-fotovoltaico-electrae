@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Módulo Fotovoltaico</string>
     <string name="btnConectar"> Conectar </string>
-    <string name="programaIngE">Programa de Ingeniería Electrónica</string>
-    <string name="selectModulo">Selecciona un modulo para visualizar</string>
+    <string name="programaIngE"> Ingeniería Electrónica</string>
+    <string name="electrae"> Grupo de Investigación ELECTRAE </string>
+    <string name="selectModulo">Selecciona un módulo para visualizar</string>
     <string name="moduloPanel">Panel solar</string>
     <string name="moduloControlador">Controlador de carga</string>
     <string name="moduloInversor">Inversor</string>
+    <string name="uniQuindio">Universidad del Quindío</string>
+    <string name="creditos">Desarrollado por: Andrés Jiménez García</string>
 </resources>

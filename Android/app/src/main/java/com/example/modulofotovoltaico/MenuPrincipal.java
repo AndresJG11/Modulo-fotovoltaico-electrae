@@ -55,6 +55,10 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
 
         ArrayList<Sensor> sensoresInversor= getSensoresInversor();
         moduloInversor = new Modulo(nombreInversor,sensoresInversor, MACInversor);
+
+        Intent intent = new Intent (this, InterfazModulo.class);
+        intent.putExtra("Modulo", moduloPanel);
+        startActivity(intent);
     }
 
 

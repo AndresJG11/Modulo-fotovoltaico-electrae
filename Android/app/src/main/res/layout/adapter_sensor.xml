@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/lyCelda"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bordes_sensor_data"
+    android:padding="1dp"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorBlackOpa"
         android:clickable="false"
+        android:background="@color/colorWhite"
         android:focusable="false"
         android:visibility="visible">
 
@@ -18,10 +18,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:focusable="false" />
+            android:buttonTint="@color/colorBlack"
+             android:focusable="false" />
 
         <TextView
             android:id="@+id/Sensor"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -35,10 +37,12 @@
 
     <TextView
         android:id="@+id/Medida"
+        android:fontFamily="sans-serif-condensed-light"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="TextView"
+        android:textColor="@color/colorBlack"
         android:textSize="18sp" />
 
 </LinearLayout>

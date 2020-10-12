@@ -53,6 +53,7 @@ public class GridAdapter extends BaseAdapter {
             //convertView = mInflaterCatalogListItems.inflate(adapter_sensor,null);
             holder.setLblSensor((TextView) convertView.findViewById(R.id.Sensor));
             holder.setLblMedida((TextView) convertView.findViewById(R.id.Medida));
+            holder.setLinearLayout((LinearLayout) convertView.findViewById(R.id.lyCelda));
             holder.setCheckBox((CheckBox) convertView.findViewById(R.id.checkBox));
 
             convertView.setTag(holder);
@@ -64,7 +65,7 @@ public class GridAdapter extends BaseAdapter {
             holder.getLblSensor().setText(dataSensores.get(position).getSensorName());
             //holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
             holder.getLblMedida().setText(dataSensores.get(position).getMedida());
-            holder.getLblMedida().setBackgroundColor(dataSensores.get(position).getColor());
+            holder.getLinearLayout().setBackgroundColor(dataSensores.get(position).getColor());
             holder.getCheckBox().setChecked(dataSensores.get(position).getEnfasis());
         }
         return convertView;
@@ -95,6 +96,9 @@ public class GridAdapter extends BaseAdapter {
             this.lblMedida = lblMedida;
         }
 
+        public LinearLayout getLinearLayout() {
+            return linearLayout;
+        }
         public void setLinearLayout(LinearLayout linearLayout) {
             this.linearLayout = linearLayout;
         }

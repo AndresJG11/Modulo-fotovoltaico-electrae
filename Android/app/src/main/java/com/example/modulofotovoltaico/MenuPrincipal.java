@@ -29,7 +29,7 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
 
     private Modulo moduloInversor;
     String nombreInversor = "HC-06";
-    String MACInversor = "Desconocida";
+    String MACInversor = "20:18:08:14:80:63";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,6 +153,19 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
         ArrayList<Sensor> sensores = new ArrayList<>();
         Sensor sensor;
 
+
+        // Temperatura
+        sensor = new Sensor("Temperatura");
+        sensor.setMedida("NaN");
+        sensor.setColor("#708AE4"); // Color del BackGround en Hexa
+        sensores.add(sensor);
+
+        // Humedad
+        sensor = new Sensor("Humedad");
+        sensor.setMedida("NaN");
+        sensor.setColor("#9770E4");
+        sensores.add(sensor);
+
         // Voltaje
         sensor = new Sensor("Voltaje");
         sensor.setMedida("NaN");
@@ -204,13 +217,11 @@ public class MenuPrincipal extends AppCompatActivity implements View.OnClickList
                 Intent intentControlador = new Intent (v.getContext(), InterfazModulo.class);
                 intentControlador.putExtra("Modulo", moduloControlador);
                 startActivity(intentControlador);
-                //Toast.makeText(getApplicationContext(),"Controlador", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btnInversor:
-                //Intent intentInversor = new Intent (v.getContext(), InterfazModulo.class);
-                //intentInversor.putExtra("Modulo", moduloInversor);
-                //startActivity(intentInversor);
-                Toast.makeText(getApplicationContext(),"Inversor", Toast.LENGTH_SHORT).show();
+                Intent intentInversor = new Intent (v.getContext(), InterfazModulo.class);
+                intentInversor.putExtra("Modulo", moduloInversor);
+                startActivity(intentInversor);
                 break;
 
         }
